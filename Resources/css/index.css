@@ -1,0 +1,146 @@
+body {
+    font-family: Roboto, sans-serif;
+    background-image: url('https://s3.amazonaws.com/codecademy-content/courses/learn-css-selectors-visual-rules/hypnotize_bg.png');
+    height: 100%;
+    margin: 0;
+  }
+
+  .container {
+    overflow: hidden;
+  }
+  
+  header {
+    padding: 20px 0;
+  }
+  
+  header .row,
+  footer .row {
+    display: flex;
+    align-items: center;
+  }
+  
+  h1 {
+    font-weight: 700;
+    margin: 0;
+  }
+  
+  nav {
+    display: flex;
+    justify-content: flex-end;
+  }
+  
+  a {
+    padding: 0 20px;
+    margin: 0;
+  }
+
+  #iss-jumbo {
+    background-image: url('https://www.nasa.gov/sites/default/files/styles/full_width_feature/public/images/557885main_iss027e036716_full.jpg');
+    background-position: center;
+  }
+  
+  .jumbotron {
+    display: flex;
+    align-items: center;
+    background-image: url('https://s3.amazonaws.com/codecademy-content/projects/personal_portfolio/background.jpeg');
+    background-size: cover;
+    color: #ffffff;
+    height: 400px;
+  }
+  
+  .jumbotron h2 {
+    font-size: 60px;
+    font-weight: 700;
+    margin: 0;
+    color: #fff;
+  }
+  
+  .jumbotron h3 {
+    margin: 0 0 20px;
+    color: #fff;
+  }
+  
+  section .row img {
+    margin: 0 0 30px;
+    width: 100%;
+  }
+  
+  .col-md-6 {
+    margin: 0 0 30px;
+  }
+  
+  .btn.btn-primary {
+    border-radius: 2px;
+    border: 0px;
+    color: #fbd1d5;
+    background-color: #ffffff;
+  }
+  
+  .btn.btn-primary:hover {
+    color: #ffffff;
+    background-color: #fbd1d5;
+  }
+  
+  .btn-secondary {
+    background-color: #2a70e0;
+    color: #ffffff;
+    margin: 0 0 30px;
+  }
+  
+  .portrait {
+    width:  350px;
+    height: 300px;
+  }
+  
+  figure img {
+    width: 100%;
+    height: auto;
+  }
+  
+  figure {
+    margin-bottom: 30px;
+  }
+  
+  footer {
+    font-size: 12px;
+    padding: 20px 0;
+  }
+  
+  footer .col-sm-8 {
+    display: flex;
+    justify-content: flex-end;
+  }
+  
+  footer ul {
+    list-style: none;
+  }
+
+  #iss{
+    position: absolute;
+    max-width: 50px;
+    max-height: 50px;
+  }
+
+  .sidenav {
+    height: calc(100%-20px);
+    width:9%;
+    position: absolute;
+    bottom: 0;
+    left: 30px;
+    float: left;
+    overflow-y: auto;
+  }
+
+  #reticleHorizontal {
+    border-bottom: thin dashed orangered;
+    position: absolute;
+  }
+
+  #reticleVertical {
+    border-left: thin dashed orangered;
+    position: absolute;
+  }
+
+  #map{
+    opacity: 0.7;
+  }
