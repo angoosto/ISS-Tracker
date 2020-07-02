@@ -1,49 +1,3 @@
-//This is a class for an ISS object
-class ISS {
-    constructor(latitude,longitude, altitude, speed) {
-        this._latitude = latitude;
-        this._longitude = longitude;
-        this._altitude = altitude;
-        this._speed = speed;
-    }
- 
-    get latitude() {
-        return this._latitude;
-    }
- 
-    get longitude() {
-        return this._longitude;
-    }
- 
-    get altitude() {
-        return this._altitude;
-    }
-
-    get speed() {
-        return this._speed;
-    }
- 
-    set latitude(newLatitude) {
-        this._latitude = newLatitude;
-    }
- 
-    set longitude(newLongitude) {
-        this._longitude = newLongitude;
-    }
- 
-    set altitude(newAltitude) {
-        this._altitude = newAltitude;
-    }
-    
-    set speed(newSpeed) {
-        this._speed = newSpeed;
-    }
-
-    toString() {
-        return `The ISS is currently positioned at ${this._longitude}, ${this._latitude}`;
-    }
-}
- 
 //This function returns JSON data from a URL
 function getJSONData(url) {
     let HttpReq = new XMLHttpRequest();
@@ -55,11 +9,17 @@ function getJSONData(url) {
 // Parses the JSON data and returns an ISS object
 function getLocation() {
     let speedAltitude = JSON.parse(getJSONData('https://api.wheretheiss.at/v1/satellites/25544'));
+    //The below link is more reliable for location but does not have other stats
     let locationjson = JSON.parse(getJSONData('http://api.open-notify.org/iss-now.json'));
-    return new ISS(parseFloat(locationjson.iss_position.latitude),parseFloat(locationjson.iss_position.longitude),Math.round(speedAltitude.altitude),Math.round(speedAltitude.velocity));
+    return {
+        latitude:parseFloat(locationjson.iss_position.latitude),
+        longitude:parseFloat(locationjson.iss_position.longitude),
+        altitude:Math.round(speedAltitude.altitude),
+        speed:Math.round(speedAltitude.velocity)
+    }
 }
  
-//Returns the bottom left coordinates of an element relative to the page
+//Returns the top left coordinates of an element relative to the page
 function getPageCoords(element) {
     const box = element.getBoundingClientRect();
     return {
@@ -70,6 +30,7 @@ function getPageCoords(element) {
     };
 }
  
+//Renders a vertical and horizontal line with the cross over point being the ISS location
 function renderReticle(mapDimensions, xypos) {
     const reticleVertical = document.getElementById('reticleVertical');
     const reticleHorizontal = document.getElementById('reticleHorizontal');
@@ -83,7 +44,7 @@ function renderReticle(mapDimensions, xypos) {
     reticleHorizontal.style.width = `${mapDimensions.width}px`;
 }
  
-//Finds the map on the page and positions the ISS element on it according to its longitude and latitude
+//Renders the ISS icon and places it in the correct location
 function renderIcon(mapDimensions, xypos) {
     const issRender = document.getElementById('iss');
     issRender.style.visibility = 'visible';
@@ -93,6 +54,7 @@ function renderIcon(mapDimensions, xypos) {
     issRender.style.top = `${mapDimensions.top + xypos.ypos - (parseInt(issRender.style.height,10)/2)}px`;
 }
 
+//Todo: Render a trail behind the icon to show where it has been
 function renderTrail(oldXY, newXY) {
     const canvas = document.getElementById('map');
     const ctx = canvas.getContext("2d");
@@ -105,6 +67,7 @@ function renderTrail(oldXY, newXY) {
     console.log(`New x: ${newXY.xpos}`);
 }
 
+//Renders the latitude, longitude, altitude and speed data
 function renderStats(iss) {
     let northSouth;
     iss.latitude>0 ? northSouth = 'North' : northSouth = 'South';
@@ -114,13 +77,9 @@ function renderStats(iss) {
     iss.longitude>0 ? eastWest = 'East' : eastWest = 'West';
     document.getElementById('longitude').innerHTML = `Longitude: ${Math.abs(iss.longitude.toFixed(2))}${String.fromCharCode(176)} ${eastWest}`;
 
+    //If JSON URL is overloaded speed is NaN
     if(!isNaN(iss.speed)) {
-        let smallSpeedVal,smallSpeedUnit;
-        // let smallSpeedUnit;
-        let bigSpeedVal;
-        let bigSpeedUnit;
-        let altitudeVal;
-        let altitudeUnit;
+        let smallSpeedVal,smallSpeedUnit,bigSpeedVal,bigSpeedUnit,altitudeVal,altitudeUnit;
         if(document.getElementById('Kilometres').checked) {
             smallSpeedVal = Math.round(iss.speed/3.6);
             smallSpeedUnit = 'm/s';
@@ -144,6 +103,7 @@ function renderStats(iss) {
     
 }
  
+//Calls all the render methods
 function renderAll() {
     const issLocation = getLocation();
     renderStats(issLocation);
