@@ -1,98 +1,34 @@
-//This function returns JSON data from a URL
-function getJSONData(url) {
-    let HttpReq = new XMLHttpRequest();
-    HttpReq.open("GET",url,false);
-    HttpReq.send(null);
-    return HttpReq.responseText;
-}
- 
-// Parses the JSON data and returns an ISS object
-function getLocation() {
-    let speedAltitude = JSON.parse(getJSONData('https://api.wheretheiss.at/v1/satellites/25544'));
-    //The below link is more reliable for location but does not have other stats
-    let locationjson = JSON.parse(getJSONData('http://api.open-notify.org/iss-now.json'));
-    return {
-        latitude:parseFloat(locationjson.iss_position.latitude),
-        longitude:parseFloat(locationjson.iss_position.longitude),
-        altitude:Math.round(speedAltitude.altitude),
-        speed:Math.round(speedAltitude.velocity)
-    }
-}
- 
-//Returns the top left coordinates of an element relative to the page
-function getPageCoords(element) {
-    const box = element.getBoundingClientRect();
-    return {
-        top: box.top + window.pageYOffset,
-        left: box.left + window.pageXOffset,
-        width: box.width,
-        height: box.height
-    };
-}
- 
-//Renders a vertical and horizontal line with the cross over point being the ISS location
-function renderReticle(mapDimensions, xypos) {
-    const reticleVertical = document.getElementById('reticleVertical');
-    const reticleHorizontal = document.getElementById('reticleHorizontal');
-    reticleVertical.style.visibility = 'visible';
-    reticleVertical.style.left = `${mapDimensions.left + xypos.xpos}px`;
-    reticleVertical.style.top = `${mapDimensions.top}px`;
-    reticleVertical.style.height = `${mapDimensions.height}px`;
-    reticleHorizontal.style.visibility = 'visible';
-    reticleHorizontal.style.left = `${mapDimensions.left}px`;
-    reticleHorizontal.style.top = `${mapDimensions.top + xypos.ypos}px`;
-    reticleHorizontal.style.width = `${mapDimensions.width}px`;
-}
- 
-//Renders the ISS icon and places it in the correct location
-function renderIcon(mapDimensions, xypos) {
-    const issRender = document.getElementById('iss');
-    issRender.style.visibility = 'visible';
-    issRender.style.height = '40px';
-    issRender.style.width = '40px';
-    issRender.style.left = `${mapDimensions.left + xypos.xpos - (parseInt(issRender.style.width,10)/2)}px`;
-    issRender.style.top = `${mapDimensions.top + xypos.ypos - (parseInt(issRender.style.height,10)/2)}px`;
+let ISSMap,ISSMarker;
+
+function renderLatLong(lat,long) {
+    let direction;
+
+    lat > 0 ? direction = 'North' : direction = 'South';
+    document.getElementById('latitude').innerHTML = `Latitude: ${Math.abs(lat.toFixed(2))}${String.fromCharCode(176)} ${direction}`;
+
+    long > 0 ? direction = 'East' : direction = 'West';
+    document.getElementById('longitude').innerHTML = `Longitude: ${Math.abs(long.toFixed(2))}${String.fromCharCode(176)} ${direction}`;
 }
 
-//Todo: Render a trail behind the icon to show where it has been
-function renderTrail(oldXY, newXY) {
-    const canvas = document.getElementById('map');
-    const ctx = canvas.getContext("2d");
-    ctx.beginPath();
-    ctx.moveTo(oldXY.xpos, oldXY.ypos);
-    ctx.lineTo(newXY.xpos, newXY.ypos);
-    ctx.strokeStyle = "red";
-    ctx.stroke();
-    console.log(`Old x: ${oldXY.xpos}`);
-    console.log(`New x: ${newXY.xpos}`);
-}
-
-//Renders the latitude, longitude, altitude and speed data
-function renderStats(iss) {
-    let northSouth;
-    iss.latitude>0 ? northSouth = 'North' : northSouth = 'South';
-    document.getElementById('latitude').innerHTML = `Latitude: ${Math.abs(iss.latitude.toFixed(2))}${String.fromCharCode(176)} ${northSouth}`;
-
-    let eastWest;
-    iss.longitude>0 ? eastWest = 'East' : eastWest = 'West';
-    document.getElementById('longitude').innerHTML = `Longitude: ${Math.abs(iss.longitude.toFixed(2))}${String.fromCharCode(176)} ${eastWest}`;
-
+//Renders the altitude and speed data
+function renderAltitudeSpeed(altitude,speed) {
+    
     //If JSON URL is overloaded speed is NaN
-    if(!isNaN(iss.speed)) {
-        let smallSpeedVal,smallSpeedUnit,bigSpeedVal,bigSpeedUnit,altitudeVal,altitudeUnit;
-        if(document.getElementById('Kilometres').checked) {
-            smallSpeedVal = Math.round(iss.speed/3.6);
+    if (!isNaN(speed)) {
+        let smallSpeedVal, smallSpeedUnit, bigSpeedVal, bigSpeedUnit, altitudeVal, altitudeUnit;
+        if (document.getElementById('Kilometres').checked) {
+            smallSpeedVal = Math.round(speed / 3.6);
             smallSpeedUnit = 'm/s';
-            bigSpeedVal = iss.speed;
+            bigSpeedVal = speed.toFixed(2);
             bigSpeedUnit = 'kph';
-            altitudeVal = iss.altitude;
+            altitudeVal = altitude.toFixed(2);
             altitudeUnit = 'km';
         } else {
-            smallSpeedVal = (iss.speed/5794).toFixed(3);
+            smallSpeedVal = (speed / 5794).toFixed(3);
             smallSpeedUnit = 'miles/s'
-            bigSpeedVal = Math.round(iss.speed/1.609);
+            bigSpeedVal = Math.round(speed / 1.609);
             bigSpeedUnit = 'mph';
-            altitudeVal = Math.round(iss.altitude/1.609);
+            altitudeVal = Math.round(altitude / 1.609);
             altitudeUnit = 'miles';
         }
         document.getElementById('smallSpeed').innerHTML = `${smallSpeedVal} ${smallSpeedUnit}`;
@@ -100,36 +36,65 @@ function renderStats(iss) {
 
         document.getElementById('altitude').innerHTML = `${altitudeVal} ${altitudeUnit}`;
     }
-    
-}
- 
-//Calls all the render methods
-function renderAll() {
-    const issLocation = getLocation();
-    renderStats(issLocation);
-    const mapDimensions = getPageCoords(document.getElementById('map'));
-    const newXY = convertLongAndLat(issLocation,mapDimensions.width,mapDimensions.height);
-    if (document.getElementById('iconCheck').checked) {
-        renderIcon(mapDimensions,newXY);
-    } else {
-        document.getElementById('iss').style.visibility = 'hidden';
-    }
-    if (document.getElementById('reticleCheck').checked) {
-        renderReticle(mapDimensions,newXY);
-    } else {
-        document.getElementById('reticleVertical').style.visibility = 'hidden';
-        document.getElementById('reticleHorizontal').style.visibility = 'hidden';
-    }
-}
- 
-//Converts longitude and latitude to x and y coordinates
-function convertLongAndLat(iss,mapWidth, mapHeight) {
-    const x = mapWidth*(180+(iss.longitude))/360;
-    const y = mapHeight*(90-iss.latitude)/180;
-    return{
-        xpos:x,
-        ypos:y
-    }
+
 }
 
-setInterval(renderAll,500);
+//Initialises the map
+function initialiseMap(lat,long) {
+    ISSMap = L.map(document.getElementById("map")).setView([lat,long], 6);
+    L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
+        attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+        maxZoom: 18,
+        id: 'mapbox/streets-v11',
+        tileSize: 512,
+        zoomOffset: -1,
+        accessToken: 'pk.eyJ1IjoiYW5nb29zdG8iLCJhIjoiY2tjNHR4OG9yMGJhaDJ3bWdvcjRrbTl5dCJ9.V3-ihHt5JgCL-6Q87UxKHg'
+    }).addTo(ISSMap);
+}
+
+//Initialises the ISS icon
+function initialiseMarker(lat,long,map) {
+    let ISSIcon = L.icon({
+        iconUrl:"./Resources/ISSIcon.png",
+        iconSize:[50,50]
+    })
+    ISSMarker = L.marker([lat,long],{icon:ISSIcon}).addTo(map);
+}
+
+//Calls all the render methods
+function renderAll() {
+
+    fetch('http://api.open-notify.org/iss-now.json')
+    .then(response => response.json())
+    .then(data => {
+        latitude = parseFloat(data.iss_position.latitude);
+        longitude = parseFloat(data.iss_position.longitude);
+        renderLatLong(latitude,longitude);
+        if (document.getElementById('iconCheck').checked) {
+            ISSMap.panTo([latitude,longitude]);
+        }
+        ISSMarker.setLatLng([latitude,longitude]);
+    })
+
+    fetch('https://api.wheretheiss.at/v1/satellites/25544')
+        .then(response => response.json())
+        .then(data => {
+            renderAltitudeSpeed(data.altitude,data.velocity);
+        })
+        
+    let animate = setTimeout(renderAll, 200);
+}
+
+function start() {
+    fetch('http://api.open-notify.org/iss-now.json')
+    .then(response => response.json())
+    .then(data => {
+        latitude = parseFloat(data.iss_position.latitude);
+        longitude = parseFloat(data.iss_position.longitude);
+        initialiseMap(latitude,longitude);
+        initialiseMarker(latitude,longitude,ISSMap);
+    })
+    renderAll();
+}
+
+start();
