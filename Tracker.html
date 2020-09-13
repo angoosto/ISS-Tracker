@@ -35,10 +35,15 @@
     </div>
   </section>
   <section class='container'>
+    <p>This is a simple ISS tracker implemented using Javascript. It accesses an API which contains the positional information about the ISS
+      and uses this to place it on a map. The map uses the Leaflet library. Unfortunately the API is prone to becoming overloaded.</p>
+    <p id="API_Status"></p>
+  </section>
+  <section class='container'>
     <div class='row' id='mapContainer'>
       <div id="map"></div>
       <div class="issIcon"></div>
-      <script src="./JS/ISS.js" defer></script>
+      <script src="./Resources/JS/ISS.js"defer></script>
     </div>
     <div class="row">
       <div class="col-sm-3">

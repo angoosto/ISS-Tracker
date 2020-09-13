@@ -1,20 +1,23 @@
-let ISSMap,ISSMarker;
+let ISSMap, ISSMarker;
+let apiOverloaded = false;
 
-function renderLatLong(lat,long) {
+function renderLatLong(lat, long) {
     let direction;
+    if (!apiOverloaded) {
+        lat > 0 ? direction = 'North' : direction = 'South';
+        document.getElementById('latitude').innerHTML = `Latitude: ${Math.abs(lat.toFixed(2))}${String.fromCharCode(176)} ${direction}`;
 
-    lat > 0 ? direction = 'North' : direction = 'South';
-    document.getElementById('latitude').innerHTML = `Latitude: ${Math.abs(lat.toFixed(2))}${String.fromCharCode(176)} ${direction}`;
+        long > 0 ? direction = 'East' : direction = 'West';
+        document.getElementById('longitude').innerHTML = `Longitude: ${Math.abs(long.toFixed(2))}${String.fromCharCode(176)} ${direction}`;
+    }
 
-    long > 0 ? direction = 'East' : direction = 'West';
-    document.getElementById('longitude').innerHTML = `Longitude: ${Math.abs(long.toFixed(2))}${String.fromCharCode(176)} ${direction}`;
 }
 
 //Renders the altitude and speed data
-function renderAltitudeSpeed(altitude,speed) {
-    
+function renderAltitudeSpeed(altitude, speed) {
     //If JSON URL is overloaded speed is NaN
     if (!isNaN(speed)) {
+        apiOverloaded = false;
         let smallSpeedVal, smallSpeedUnit, bigSpeedVal, bigSpeedUnit, altitudeVal, altitudeUnit;
         if (document.getElementById('Kilometres').checked) {
             smallSpeedVal = Math.round(speed / 3.6);
@@ -35,13 +38,23 @@ function renderAltitudeSpeed(altitude,speed) {
         document.getElementById('bigSpeed').innerHTML = `${bigSpeedVal} ${bigSpeedUnit}`;
 
         document.getElementById('altitude').innerHTML = `${altitudeVal} ${altitudeUnit}`;
+    } else {
+        apiOverloaded = true;
     }
-
 }
 
 //Initialises the map
-function initialiseMap(lat,long) {
-    ISSMap = L.map(document.getElementById("map")).setView([lat,long], 6);
+function initialiseMap(lat, long) {
+    let mapLat, mapLong
+    if (!lat) {
+        mapLat = 0;
+        mapLong = 0;
+        apiOverloaded = true;
+    } else {
+        mapLat = lat;
+        mapLong = long;
+    }
+    ISSMap = L.map(document.getElementById("map")).setView([mapLat, mapLong], 6);
     L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
         attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
         maxZoom: 18,
@@ -53,47 +66,53 @@ function initialiseMap(lat,long) {
 }
 
 //Initialises the ISS icon
-function initialiseMarker(lat,long,map) {
+function initialiseMarker(lat, long, map) {
     let ISSIcon = L.icon({
-        iconUrl:"./Resources/ISSIcon.png",
-        iconSize:[50,50]
+        iconUrl: "./Resources/images/ISSIcon.png",
+        iconSize: [50, 50]
     })
-    ISSMarker = L.marker([lat,long],{icon:ISSIcon}).addTo(map);
+    if (apiOverloaded) {
+        ISSMarker = L.marker([0, 0], { icon: ISSIcon }).addTo(map);
+    } else {
+        ISSMarker = L.marker([lat,long],{icon:ISSIcon}).addTo(map);
+    }
+}
+
+function renderAPIStatus() {
+    if(apiOverloaded) {
+        document.getElementById("API_Status").innerHTML = "The API is currently overloaded and the tracker will not work - please check back later!";
+    } else {
+        document.getElementById("API_Status").innerHTML = "The API is currently working!"
+    }   
 }
 
 //Calls all the render methods
 function renderAll() {
-
-    fetch('http://api.open-notify.org/iss-now.json')
-    .then(response => response.json())
-    .then(data => {
-        latitude = parseFloat(data.iss_position.latitude);
-        longitude = parseFloat(data.iss_position.longitude);
-        renderLatLong(latitude,longitude);
-        if (document.getElementById('iconCheck').checked) {
-            ISSMap.panTo([latitude,longitude]);
-        }
-        ISSMarker.setLatLng([latitude,longitude]);
-    })
-
     fetch('https://api.wheretheiss.at/v1/satellites/25544')
         .then(response => response.json())
         .then(data => {
-            renderAltitudeSpeed(data.altitude,data.velocity);
+            renderAltitudeSpeed(data.altitude, data.velocity);
+            renderLatLong(data.latitude, data.longitude)
+            if (data.latitude) {
+                if (document.getElementById('iconCheck').checked) {
+                    ISSMap.panTo([data.latitude, data.longitude]);
+                }
+                ISSMarker.setLatLng([data.latitude, data.longitude]);
+            }
         })
-        
+        .catch(error => console.log("Error accessing database: ", error));
+    renderAPIStatus();
     let animate = setTimeout(renderAll, 200);
 }
 
 function start() {
-    fetch('http://api.open-notify.org/iss-now.json')
-    .then(response => response.json())
-    .then(data => {
-        latitude = parseFloat(data.iss_position.latitude);
-        longitude = parseFloat(data.iss_position.longitude);
-        initialiseMap(latitude,longitude);
-        initialiseMarker(latitude,longitude,ISSMap);
-    })
+    fetch('https://api.wheretheiss.at/v1/satellites/25544')
+        .then(response => response.json())
+        .then(data => {
+            initialiseMap(data.latitude, data.longitude);
+            initialiseMarker(data.latitude, data.longitude, ISSMap);
+        })
+        .catch(error => console.log("Error accessing database: ", error));
     renderAll();
 }
 

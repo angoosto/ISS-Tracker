@@ -1,152 +1,213 @@
 body {
-    font-family: Roboto, sans-serif;
-    background-image: url('https://s3.amazonaws.com/codecademy-content/courses/learn-css-selectors-visual-rules/hypnotize_bg.png');
-    height: 100%;
-    margin: 0;
-  }
+  font-family: Roboto, sans-serif;
+  background-image: url('https://s3.amazonaws.com/codecademy-content/courses/learn-css-selectors-visual-rules/hypnotize_bg.png');
+  height: 100%;
+  margin: 0;
+}
 
-  .container {
-    overflow: hidden;
-  }
-  
-  header {
-    padding: 20px 0;
-  }
-  
-  header .row,
-  footer .row {
-    display: flex;
-    align-items: center;
-  }
-  
-  h1 {
-    font-weight: 700;
-    margin: 0;
-  }
-  
-  nav {
-    display: flex;
-    justify-content: flex-end;
-  }
-  
-  a {
-    padding: 0 20px;
-    margin: 0;
-  }
+.container {
+  overflow: hidden;
+}
 
-  #iss-jumbo {
-    background-image: url('https://www.nasa.gov/sites/default/files/styles/full_width_feature/public/images/557885main_iss027e036716_full.jpg');
-    background-position: center;
-  }
-  
-  .jumbotron {
-    display: flex;
-    align-items: center;
-    background-image: url('https://s3.amazonaws.com/codecademy-content/projects/personal_portfolio/background.jpeg');
-    background-size: cover;
-    color: #ffffff;
-    height: 400px;
-  }
-  
-  .jumbotron h2 {
-    font-size: 60px;
-    font-weight: 700;
-    margin: 0;
-    color: #fff;
-  }
-  
-  .jumbotron h3 {
-    margin: 0 0 20px;
-    color: #fff;
-  }
-  
-  section .row img {
-    margin: 0 0 30px;
-    width: 100%;
-  }
-  
-  .col-md-6 {
-    margin: 0 0 30px;
-  }
-  
-  .btn.btn-primary {
-    border-radius: 2px;
-    border: 0px;
-    color: #fbd1d5;
-    background-color: #ffffff;
-  }
-  
-  .btn.btn-primary:hover {
-    color: #ffffff;
-    background-color: #fbd1d5;
-  }
-  
-  .btn-secondary {
-    background-color: #2a70e0;
-    color: #ffffff;
-    margin: 0 0 30px;
-  }
-  
-  .portrait {
-    width:  350px;
-    height: 300px;
-  }
-  
-  figure img {
-    width: 100%;
-    height: auto;
-  }
-  
-  figure {
-    margin-bottom: 30px;
-  }
-  
-  footer {
-    font-size: 12px;
-    padding: 20px 0;
-  }
-  
-  footer .col-sm-8 {
-    display: flex;
-    justify-content: flex-end;
-  }
-  
-  footer ul {
-    list-style: none;
-  }
+header {
+  padding: 20px 0;
+}
 
-  #iss{
-    position: absolute;
-    max-width: 50px;
-    max-height: 50px;
-  }
+header .row,
+footer .row {
+  display: flex;
+  align-items: center;
+}
 
-  .sidenav {
-    height: calc(100%-20px);
-    width:9%;
-    position: absolute;
-    bottom: 0;
-    left: 30px;
-    float: left;
-    overflow-y: auto;
-  }
+h1 {
+  font-weight: 700;
+  margin: 0;
+}
 
-  #reticleHorizontal {
-    border-bottom: thin dashed orangered;
-    position: absolute;
-  }
+nav {
+  display: flex;
+  justify-content: flex-end;
+}
 
-  #reticleVertical {
-    border-left: thin dashed orangered;
-    position: absolute;
-  }
+#iss-jumbo {
+  background-image: url('https://www.nasa.gov/sites/default/files/styles/full_width_feature/public/images/557885main_iss027e036716_full.jpg');
+  background-position: center;
+}
 
-  #map{
-    width: 100%;
-    height: 500px;
-  }
+.jumbotron {
+  display: flex;
+  align-items: center;
+  background-image: url('../images/header.jpg');
+  background-size: cover;
+  color: #ffffff;
+  height: 400px;
+}
 
-  .leaflet-div-icon
-  {
-      background-image: url('./Resources/ISSIcon.png');
-  }
+.jumbotron h2 {
+  font-size: 60px;
+  font-weight: 700;
+  margin: 0;
+  color: #fff;
+}
+
+.jumbotron h3 {
+  margin: 0 0 20px;
+  color: #fff;
+}
+
+section .row img {
+  margin: 0 0 30px;
+  width: 100%;
+}
+
+.col-md-6 {
+  margin: 0 0 30px;
+}
+
+.col-sm-2 h5 {
+    text-align: center;
+}
+
+.col-sm h5 {
+    text-align: center;
+}
+
+.icon:hover {
+    transform: scale(1.1)
+}
+
+.btn.btn-primary {
+  border-radius: 2px;
+  border: 0px;
+  color: #fbd1d5;
+  background-color: #ffffff;
+}
+
+.btn.btn-primary:hover {
+  color: #ffffff;
+  background-color: #fbd1d5;
+}
+
+.btn-secondary {
+  background-color: #2a70e0;
+  color: #ffffff;
+  margin: 0 0 30px;
+}
+
+.portrait {
+  width:  350px;
+  height: 300px;
+}
+
+figure img {
+  width: 100%;
+  height: auto;
+}
+
+figure {
+  margin-bottom: 30px;
+}
+
+footer {
+  font-size: 12px;
+  padding: 20px 0;
+}
+
+footer .col-sm-8 {
+  display: flex;
+  justify-content: flex-end;
+}
+
+footer ul {
+  list-style: none;
+}
+
+#iss{
+  position: absolute;
+  max-width: 50px;
+  max-height: 50px;
+}
+
+.sidenav {
+  height: calc(100%-20px);
+  width:9%;
+  position: absolute;
+  bottom: 0;
+  left: 30px;
+  float: left;
+  overflow-y: auto;
+}
+
+#reticleHorizontal {
+  border-bottom: thin dashed orangered;
+  position: absolute;
+}
+
+#reticleVertical {
+  border-left: thin dashed orangered;
+  position: absolute;
+}
+
+#map{
+  width: 100%;
+  height: 500px;
+}
+
+#contact-icon {
+    width: 10%;
+    height: 50%;
+    display: block;
+    margin: auto;
+}
+
+.leaflet-div-icon
+{
+    background-image: url('../images/ISSIcon.png');
+}
+
+.project-container {
+  position: relative;
+  overflow: hidden;
+}
+
+.project-image {
+  display: block;
+  width: 100%;
+  height: auto;
+  transition: all 0.5s ease-in-out;
+}
+
+.project-overlay {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 100%;
+  width: 100%;
+  opacity: 0;
+  transition: 0.5s ease-in-out;
+  /* background-color: darkgray; */
+}
+
+.project-container:hover img {
+  transform: scale(1.5);
+  filter: brightness(50%);
+  rotate: 15deg;
+}
+
+.project-container:hover .project-overlay {
+  opacity: 1;
+}
+
+.project-text {
+  color: #fff;
+  font-size: 20px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  -webkit-transform: translate(-50%, -50%);
+  -ms-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+  text-align: center;
+}
