@@ -1,0 +1,46 @@
+body {
+    padding-top: 3.5rem;
+    font-family: Roboto, sans-serif;
+    background-image: url('https://s3.amazonaws.com/codecademy-content/courses/learn-css-selectors-visual-rules/hypnotize_bg.png');
+    height: 100%;
+    margin: 0;
+}
+
+.jumbotron {
+    display: flex;
+    align-items: center;
+    background-image: url('../images/header.jpg');
+    background-size: cover;
+    color: #ffffff;
+    height: 14rem;
+}
+
+.row h3 {
+    text-align: center;
+}
+  
+.icon:hover {
+    transform: scale(1.1)
+}
+
+.card {
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+    text-align: center;
+}
+
+.card img {
+    max-height: 10rem;
+    max-width: 10rem;
+    margin: auto;
+}
+
+.footer-link {
+    text-align: left;
+}
+
+footer {
+    font-size: 0.8rem;
+  }
